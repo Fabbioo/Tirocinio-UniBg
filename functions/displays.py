@@ -158,9 +158,8 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
     plt.plot(epsilons, accuracies, marker = 'o', color = 'red')
 
     # Plot di alcune delle immagini perturbate classificate erroneamente.
-    # FIXME GUARDA IPAD PER L'IMPOSTAZIONE DEI GRAFICI
     if show_wrong_preds:
-        
+
         column_number: int = 4 # Numero arbitrario di grafici da creare per ciascun valore di epsilon
 
         # Se non ci sono abbastanza grafici da creare per il particolare valore di epsilon modifico il numero di grafici da creare
@@ -174,13 +173,14 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
         if column_number > min_number_of_elements_in_list_for_each_epsilon:
             column_number = min_number_of_elements_in_list_for_each_epsilon
 
+        # Plot delle immagini perturbate classificate erroneamente.
         for i in range(len(epsilons)):
             if epsilons[i] == 0: # In corrispondenza di epsilon = 0 non ci possono essere errori nelle predizioni, perciò passo direttamente all'iterazione successiva.
                 continue
             plt.figure()
             for j in range(column_number):
                 _, class_name, _ = inference(model, dict_wrong_preds[epsilons[i]][j])
-                plt.suptitle(f"Epsilon: {epsilons[i]}")
+                plt.suptitle(f'Epsilon: {epsilons[i]}')
                 plt.subplot(1, column_number, j + 1)
                 plt.imshow(tensor2ndarray(dict_wrong_preds[epsilons[i]][j]))
                 plt.title('Wrong pred: ' + class_name + '\n', color = 'red')
