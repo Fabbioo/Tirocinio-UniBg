@@ -34,6 +34,7 @@ def tensor2ndarray(tensor: torch.Tensor) -> np.ndarray:
     
     tensor = tensor.squeeze().permute(1, 2, 0).detach().cpu().numpy()
     ndarray = (tensor * 255.).astype('uint8')
+    
     return ndarray
 
 def preds_display(model: torchvision.models, tripla: tuple, epsilon: float, show_noise: bool = False) -> None:
