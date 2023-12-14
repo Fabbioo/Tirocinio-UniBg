@@ -13,6 +13,7 @@ def preprocess(image: torch.Tensor, resize: tuple) -> torch.Tensor:
     \nOutput:
     \n  - torch.Tensor: immagine preprocessata con shape (a, b, c, d).
     """
+    
     image = torch.clamp(image, 0, 255).to(torch.uint8)
     image = torchvision.transforms.functional.resize(image, [resize[0], resize[1]])
     image = image.float() / 255.
@@ -22,6 +23,7 @@ def preprocess(image: torch.Tensor, resize: tuple) -> torch.Tensor:
     )
     image = normalization(image)
     image = image.unsqueeze(0)
+    
     return image
 
 def inference(model: torchvision.models, image: torch.Tensor) -> (int, str, float):
@@ -35,10 +37,13 @@ def inference(model: torchvision.models, image: torch.Tensor) -> (int, str, floa
     \n  - str: etichetta della classe predetta.
     \n  - float: confidenza della predizione.
     """
+    
     output = model(image).squeeze(0).softmax(0) # output.shape = torch.Size([1000])
+    
     class_id = output.argmax().item()
     class_name = ResNet50_Weights.IMAGENET1K_V2.meta['categories'][class_id]
     class_conf = output[class_id].item()
+    
     return (class_id, class_name, class_conf)
 
 def fgsm_attack(model: torchvision.models, image: torch.Tensor, epsilon: float, device: str) -> (torch.Tensor, torch.Tensor):
@@ -53,6 +58,7 @@ def fgsm_attack(model: torchvision.models, image: torch.Tensor, epsilon: float, 
     \n  - torch.Tensor: tensore rappresentante l'immagine perturbata da postprocessare.
     \n  - torch.Tensor: tensore rappresentante il noise aggiunto all'immagine di input.
     """
+    
     image.requires_grad = True
     target: int = inference(model, image)[0]
     target = torch.Tensor([target]).long().to(device)
@@ -65,6 +71,7 @@ def fgsm_attack(model: torchvision.models, image: torch.Tensor, epsilon: float, 
     grad_sign = grad.sign()
     noise = epsilon * grad_sign
     perturbed_image = image + noise       
+    
     return (perturbed_image, noise)
 
 def postprocess(image: torch.Tensor) -> torch.Tensor:
@@ -75,10 +82,12 @@ def postprocess(image: torch.Tensor) -> torch.Tensor:
     \nOutput:
     \n  - torch.Tensor: immagine postprocessata.
     """
+    
     denormalization = torchvision.transforms.Normalize(
         mean = [-0.485/0.229, -0.456/0.224, -0.406/0.255],
         std = [1/0.229, 1/0.224, 1/0.255]
     )
     image = denormalization(image)
     image = torch.clamp(image, 0, 1) 
+    
     return image

@@ -6,7 +6,7 @@ import torchvision
 from torchvision.io import read_image
 from torchray.attribution.grad_cam import grad_cam
 
-# My functions
+# My imports
 from .attack_utils import *
 
 def visualize(image: torch.Tensor) -> None:
@@ -17,6 +17,7 @@ def visualize(image: torch.Tensor) -> None:
     \nOutput:
     \n  - None.
     """
+
     # Per visualizzare un tensore rappresentante un'immagine: visualize(tensor2ndarray(tensore_da_visualizzare))
     plt.figure(figsize = (4, 3))
     plt.axis('off')
@@ -30,6 +31,7 @@ def tensor2ndarray(tensor: torch.Tensor) -> np.ndarray:
     \nOutput:
     \n  - numpy.ndarray with shape (c, d, b).
     """
+    
     tensor = tensor.squeeze().permute(1, 2, 0).detach().cpu().numpy()
     ndarray = (tensor * 255.).astype('uint8')
     return ndarray
@@ -45,18 +47,21 @@ def preds_display(model: torchvision.models, tripla: tuple, epsilon: float, show
     \nOutput:
     \n  - None.
     """
+    
     if show_noise:
         images = [tensor2ndarray(tripla[0]), tensor2ndarray(tripla[1]), tensor2ndarray(tripla[2])]
         objects = ['ORIGINAL', 'NOISE', 'PERTURBED']
     else:
         images = [tensor2ndarray(tripla[0]), tensor2ndarray(tripla[2])]
         objects = ['ORIGINAL', 'PERTURBED']
+    
     outputs_orig = inference(model, tripla[0])
     outputs_pert = inference(model, tripla[2])
     if outputs_orig[1] == outputs_pert[1]: # Se le due predizioni coincidono stampo una scritta verde, altrimenti rossa
         color: str = 'green'
     else:
         color: str = 'red'
+    
     plt.figure()
     for i in range(len(images)):
         plt.subplot(1, len(images), i + 1)
@@ -81,22 +86,28 @@ def gradcam_display(model: torchvision.models, tripla: tuple, resize: tuple) -> 
     \nOutpu:
     \n  - None.
     """
+    
     layer = 'layer4'
     titles = ['ORIGINAL', 'PERTURBED']
+    
     outputs_orig = inference(model, tripla[0])
     outputs_pert = inference(model, tripla[2])
+    
     cam_orig = grad_cam(model, tripla[0], target = outputs_orig[0], saliency_layer = layer)
     cam_orig = (cam_orig - cam_orig.min()) / (cam_orig.max() - cam_orig.min())
     cam_orig = torchvision.transforms.functional.resize(cam_orig, [resize[0], resize[1]])
     image_to_show_orig = cam_orig[0].permute(1, 2, 0).detach().cpu().numpy()
+    
     cam_pert = grad_cam(model, tripla[2], target = outputs_pert[0], saliency_layer = layer)
     cam_pert = (cam_pert - cam_pert.min()) / (cam_pert.max() - cam_pert.min())
     cam_pert = torchvision.transforms.functional.resize(cam_pert, [resize[0], resize[1]])
     image_to_show_pert = cam_pert[0].permute(1, 2, 0).detach().cpu().numpy()
+    
     if outputs_orig[1] == outputs_pert[1]: # Se le due predizioni coincidono ...
         color: str = 'green' # ... stampo una scritta verde ...
     else:
         color: str = 'red' # ... altrimenti la stampo rossa.
+    
     plt.figure()
     for i in range(len(titles)):
         plt.subplot(1, len(titles), i + 1)
@@ -122,13 +133,19 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
     \nOutput:
     \n  - None.
     """
+    
     accuracies: list = []
+    
     if show_wrong_preds:
         dict_wrong_preds: dict = {}
+    
     for epsilon in epsilons:
+        
         correct_predicts: int = 0 # Contatore per il numero di predizioni corrette
+        
         if show_wrong_preds:
             wrong_preds: list = []
+        
         for image in dataset:
             original_image: torch.Tensor = read_image(image)
             original_image: torch.Tensor = preprocess(original_image, resize).to(device)
@@ -141,8 +158,10 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
                 correct_predicts += 1
             elif show_wrong_preds: # SE le predizioni sulle due immagini sono diverse e SE devo visualizzare le immagini classificate erroneamente
                 wrong_preds.append(perturbed_image)
+        
         correct_predicts /= len(dataset)
         accuracies.append(correct_predicts)
+        
         if show_wrong_preds:
             np.random.shuffle(wrong_preds)
             dict_wrong_preds[epsilon] = wrong_preds
@@ -175,8 +194,10 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
 
         # Plot delle immagini perturbate classificate erroneamente.
         for i in range(len(epsilons)):
+            
             if epsilons[i] == 0: # In corrispondenza di epsilon = 0 non ci possono essere errori nelle predizioni, perciò passo direttamente all'iterazione successiva.
                 continue
+            
             plt.figure()
             for j in range(column_number):
                 _, class_name, _ = inference(model, dict_wrong_preds[epsilons[i]][j])
