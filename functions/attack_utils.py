@@ -8,7 +8,7 @@ def preprocess(image: torch.Tensor, resize: tuple) -> torch.Tensor:
     """
     \nObiettivo: preprocessare le immagini su cui eseguire l'attacco FGSM.
     \nInput:
-    \n  - image = immagine da preprocessare.
+    \n  - image: immagine da preprocessare.
     \n  - resize: tupla contenente le dimensioni a cui fare il resize dell'immagine per il preprocessing.
     \nOutput:
     \n  - torch.Tensor: immagine preprocessata con shape (a, b, c, d).
