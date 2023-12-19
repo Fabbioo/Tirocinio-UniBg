@@ -18,7 +18,6 @@ def visualize(image: torch.Tensor) -> None:
     \n  - None.
     """
 
-    # Per visualizzare un tensore rappresentante un'immagine: visualize(tensor2ndarray(tensore_da_visualizzare))
     plt.figure(figsize = (4, 3))
     plt.axis('off')
     plt.imshow(image)
@@ -58,10 +57,10 @@ def preds_display(model: torchvision.models, tripla: tuple, epsilon: float, show
     
     outputs_orig = inference(model, tripla[0])
     outputs_pert = inference(model, tripla[2])
-    if outputs_orig[1] == outputs_pert[1]: # Se le due predizioni coincidono stampo una scritta verde, altrimenti rossa
-        color: str = 'green'
+    if outputs_orig[1] == outputs_pert[1]: # Se le due predizioni coincidono ...
+        color: str = 'green' # ... stampo una scritta verde ...
     else:
-        color: str = 'red'
+        color: str = 'red' # ... altrimenti rossa.
     
     plt.figure()
     for i in range(len(images)):
@@ -107,7 +106,7 @@ def gradcam_display(model: torchvision.models, tripla: tuple, resize: tuple) -> 
     if outputs_orig[1] == outputs_pert[1]: # Se le due predizioni coincidono ...
         color: str = 'green' # ... stampo una scritta verde ...
     else:
-        color: str = 'red' # ... altrimenti la stampo rossa.
+        color: str = 'red' # ... altrimenti rossa.
     
     plt.figure()
     for i in range(len(titles)):
@@ -142,7 +141,7 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
     
     for epsilon in epsilons:
         
-        correct_predicts: int = 0 # Contatore per il numero di predizioni corrette
+        correct_predicts: int = 0
         
         if show_wrong_preds:
             wrong_preds: list = []
@@ -157,7 +156,7 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
             pred2: int = model(perturbed_image).argmax().item()
             if pred1 == pred2:
                 correct_predicts += 1
-            elif show_wrong_preds: # SE le predizioni sulle due immagini sono diverse e SE devo visualizzare le immagini classificate erroneamente
+            elif show_wrong_preds:
                 wrong_preds.append(perturbed_image)
         
         correct_predicts /= len(dataset)
@@ -180,10 +179,10 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
     # Plot di alcune delle immagini perturbate classificate erroneamente.
     if show_wrong_preds:
 
-        column_number: int = 4 # Numero arbitrario di grafici da creare per ciascun valore di epsilon
+        column_number: int = 4 # Numero arbitrario di grafici da creare per ciascun valore di epsilon.
 
-        # Se non ci sono abbastanza grafici da creare per il particolare valore di epsilon modifico il numero di grafici da creare
-        min_number_of_elements_in_list_for_each_epsilon: int = len(dataset) # Scelta arbitraria di inizializzazione
+        # Se non ci sono abbastanza grafici da creare per il particolare valore di epsilon modifico il numero di grafici da creare.
+        min_number_of_elements_in_list_for_each_epsilon: int = len(dataset) # Scelta arbitraria di inizializzazione.
         for i in range(len(epsilons)):
             if epsilons[i] == 0: # In corrispondenza di epsilon = 0 non ci possono essere errori nelle predizioni, perciò passo direttamente all'iterazione successiva.
                 continue
@@ -205,5 +204,5 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
                 plt.suptitle(f'Epsilon: {epsilons[i]}')
                 plt.subplot(1, column_number, j + 1)
                 plt.imshow(tensor2ndarray(dict_wrong_preds[epsilons[i]][j]))
-                plt.title('Wrong pred: ' + class_name + '\n', color = 'red')
+                plt.title('Wrong pred:\n' + class_name + '\n', color = 'red')
                 plt.axis('off')
