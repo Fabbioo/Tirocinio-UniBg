@@ -4,7 +4,7 @@ import torch.nn as nn
 import torchvision
 from torchvision.models import ResNet50_Weights
 
-def preprocess(image: torch.Tensor, resize: tuple) -> torch.Tensor:
+def preprocess(image: torch.Tensor, img_resize: tuple) -> torch.Tensor:
     """
     \nObiettivo: preprocessare le immagini su cui eseguire l'attacco FGSM.
     \nInput:
@@ -15,7 +15,7 @@ def preprocess(image: torch.Tensor, resize: tuple) -> torch.Tensor:
     """
     
     image = torch.clamp(image, 0, 255).to(torch.uint8)
-    image = torchvision.transforms.functional.resize(image, [resize[0], resize[1]])
+    image = torchvision.transforms.functional.resize(image, [img_resize[0], img_resize[1]])
     image = image.float() / 255.
     normalization = torchvision.transforms.Normalize(
         mean = [0.485, 0.456, 0.406],
