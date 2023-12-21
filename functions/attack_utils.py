@@ -70,7 +70,7 @@ def fgsm_attack(model: torchvision.models, image: torch.Tensor, epsilon: float, 
     grad = image.grad.data
     grad_sign = grad.sign()
     noise = epsilon * grad_sign
-    perturbed_image = image + noise       
+    perturbed_image = image + noise
     
     return (perturbed_image, noise)
 
