@@ -168,7 +168,7 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
     
     # Plot del grafico relativo alle performance del modello.
     plt.figure()
-    plt.suptitle(f'Performance del modello ResNet-50 al variare di epsilon su un dataset di {len(dataset)} immagini') 
+    plt.suptitle(f'Performance del modello ResNet-50 al variare di epsilon su un dataset di {len(dataset)} immagini')
     plt.xlabel('Epsilon')
     plt.ylabel('Accuracy')
     plt.xticks(np.arange(0, 1.1, step = 0.1))
