@@ -178,7 +178,7 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
 
     # Plot di alcune delle immagini perturbate classificate erroneamente.
     if show_wrong_preds:
-
+        
         column_number: int = 4 # Numero arbitrario di grafici da creare per ciascun valore di epsilon.
 
         # Se non ci sono abbastanza grafici da creare per il particolare valore di epsilon modifico il numero di grafici da creare.
