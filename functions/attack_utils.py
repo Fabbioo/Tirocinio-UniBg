@@ -46,7 +46,7 @@ def inference(model: torchvision.models, image: torch.Tensor) -> (int, str, floa
     
     return (class_id, class_name, class_conf)
 
-def fgsm_attack(model: torchvision.models, image: torch.Tensor, epsilon: float, device: str) -> (torch.Tensor, torch.Tensor):
+def fgsm_attack(model: torchvision.models, image: torch.Tensor, epsilon: float, device: str) -> torch.Tensor:
     """
     \nObiettivo: eseguire l'attacco FGSM.
     \nInput:
@@ -67,12 +67,8 @@ def fgsm_attack(model: torchvision.models, image: torch.Tensor, epsilon: float, 
     loss = loss_fn(real_pred, target)
     model.zero_grad()
     loss.backward()
-    grad = image.grad.data
-    grad_sign = grad.sign()
-    noise = epsilon * grad_sign
-    perturbed_image = image + noise
-    
-    return (perturbed_image, noise)
+    perturbed_image = image + epsilon * image.grad.sign()    
+    return perturbed_image
 
 def postprocess(image: torch.Tensor) -> torch.Tensor:
     """

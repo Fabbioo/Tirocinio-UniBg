@@ -148,10 +148,10 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
         
         for image in dataset:
             original_image: torch.Tensor = read_image(image)
-            original_image: torch.Tensor = preprocess(original_image, resize).to(device)
-            perturbed_image, _ = fgsm_attack(model, original_image, epsilon, device)
-            original_image: torch.Tensor = postprocess(original_image)
-            perturbed_image: torch.Tensor = postprocess(perturbed_image)
+            original_image = preprocess(original_image, resize).to(device)
+            perturbed_image: torch.Tensor = fgsm_attack(model, original_image, epsilon, device)
+            original_image = postprocess(original_image)
+            perturbed_image = postprocess(perturbed_image)
             pred1: int = model(original_image).argmax().item()
             pred2: int = model(perturbed_image).argmax().item()
             if pred1 == pred2:
@@ -200,7 +200,7 @@ def performance_display(dataset: list, model: torchvision.models, resize: tuple,
             
             plt.figure()
             for j in range(column_number):
-                _, class_name, _ = inference(model, dict_wrong_preds[epsilons[i]][j])
+                _, class_name = inference(model, dict_wrong_preds[epsilons[i]][j])
                 plt.suptitle(f'Epsilon: {epsilons[i]}')
                 plt.subplot(1, column_number, j + 1)
                 plt.imshow(tensor2ndarray(dict_wrong_preds[epsilons[i]][j]))
